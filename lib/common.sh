@@ -201,9 +201,15 @@ determineTool() {
     elif [ -d "$build/src" -a -n "$(find "$build/src" -mindepth 2 -type f -name '*.go' | sed 1q)" ]; then
         TOOL="gb"
         setGoVersionFromEnvironment
-    else
-        err "Godep, GB or govendor are required. For instructions:"
-        err "https://devcenter.heroku.com/articles/go-support"
-        exit 1
+  else
+      TOOL="go_nativevendoring"
+      ver=${GOVERSION:-$DefaultGoVersion}
+      if [ -z $GOPACKAGENAME ]
+      then
+          err 'To use go native vendoring set the $GOPACKAGENAME'
+          err "environment variable to your app's package name"
+          exit 1
+      fi
+      name=$GOPACKAGENAME
     fi
 }
